@@ -41,6 +41,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   late AnimationController controller;
   bool year2023 = true;
   int timeleft =10;
+  bool url=false;
+
 
   void _startCoutDown(){
     Timer.periodic(Duration(seconds: 1), (timer){
@@ -109,6 +111,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         audioPath = path!;
 
       });
+
+
+    } catch (e) {
+      print("Error stop Recording : $e");
+    }
+  }
+
+  Future<void> playRecording() async {
+    try {
+      Source urlSource = UrlSource(audioPath);
+
+      url=true;
       setState(() {
         bool value=false;
         year2023 = value;
@@ -120,15 +134,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             ..repeat();
         }
       });
-
-    } catch (e) {
-      print("Error stop Recording : $e");
-    }
-  }
-
-  Future<void> playRecording() async {
-    try {
-      Source urlSource = UrlSource(audioPath);
       await audioPlayer.play(urlSource);
     } catch (e) {
       print("Error Play Recording : $e");
@@ -145,14 +150,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           spacing: 16.0,
           children: <Widget>[
             Text(timeleft.toString(),style: TextStyle(fontSize: 20),),
-            if (isRecording)
-            Padding(
-              padding: const EdgeInsets.only(left: 80,right: 80),
-              child: LinearProgressIndicator(
-                year2023: year2023,
-                value: controller.value,
-              ),
-            ),
+            if(isRecording)
+              Text("Audio is Recording" ,style: TextStyle(fontSize: 20),),
+
 
             ElevatedButton(
               onPressed: isRecording ? stopRecording : startRecording,
@@ -163,13 +163,21 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             ),
             SizedBox(height: 25),
 
-
+            if (url)
+              Padding(
+                padding: const EdgeInsets.only(left: 80,right: 80),
+                child: LinearProgressIndicator(
+                  year2023: year2023,
+                  value: controller.value,
+                ),
+              ),
             //if(isRecording && audioPath !=null)
 
             ElevatedButton(
               onPressed: playRecording,
               child: Text("Play Recording"),
             ),
+
           ],
         ),
       ),
